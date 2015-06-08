@@ -4,8 +4,22 @@
 #include "FPSCharacter.h"
 
 AFPSCharacter::AFPSCharacter(const FObjectInitializer& OBjectInitialzer)
+	: Super(OBjectInitialzer)
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	FirstPersonCameraComponent = OBjectInitialzer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
+	FirstPersonCameraComponent->AttachParent = CapsuleComponent;
+	FirstPersonCameraComponent->RelativeLocation = FVector(0, 0, 50.0f + BaseEyeHeight);
+	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	FirstPersonMesh = OBjectInitialzer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("FirstPersonMesh"));
+	FirstPersonMesh->SetOnlyOwnerSee(true);
+	FirstPersonMesh->AttachParent = FirstPersonCameraComponent;
+	FirstPersonMesh->bCastDynamicShadow = false;
+	FirstPersonMesh->CastShadow = false;
+
+	Mesh->SetOwnerNoSee(false);
 }
 
 void AFPSCharacter::BeginPlay()
@@ -24,6 +38,10 @@ void AFPSCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompon
 	Super::SetupPlayerInputComponent(InputComponent);
 	InputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
+	InputComponent->BindAxis("LookVertical", this, &AFPSCharacter::AddControllerPitchInput);
+	InputComponent->BindAxis("LookHorizontal", this, &AFPSCharacter::AddControllerYawInput);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::OnStartJump);
+	InputComponent->BindAction("Jump", IE_Released, this, &AFPSCharacter::OnStopJump);
 }
 
 void AFPSCharacter::MoveForward(float Value)
@@ -53,6 +71,16 @@ void AFPSCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AFPSCharacter::OnStartJump()
+{
+	bPressedJump = true;
+}
+
+void AFPSCharacter::OnStopJump()
+{
+	bPressedJump = false;
 }
 
 // Called every frame

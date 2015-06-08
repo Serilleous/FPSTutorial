@@ -12,11 +12,26 @@ class FPSTUTORIAL_API AFPSCharacter : public ACharacter
 
 	AFPSCharacter(const FObjectInitializer& OBjectInitialzer);
 
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	USkeletalMeshComponent* FirstPersonMesh;
+
+private:
 	UFUNCTION()
 	void MoveForward(float Value);
 
 	UFUNCTION()
 	void MoveRight(float Value);
+
+	UFUNCTION()
+	void OnStartJump();
+
+	UFUNCTION()
+	void OnStopJump();
 
 protected:
 
