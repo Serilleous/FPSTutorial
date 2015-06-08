@@ -13,6 +13,8 @@ class FPSTUTORIAL_API AFPSGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+	AFPSGameMode(const FObjectInitializer& ObjectInitializer);
+
 	virtual void StartPlay() override;
 
 };
