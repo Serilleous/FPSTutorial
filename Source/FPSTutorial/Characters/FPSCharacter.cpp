@@ -109,8 +109,8 @@ void AFPSCharacter::OnFire()
 			if (Projectile)
 			{
 				// find launch direction
-				FVector const LaunchDir = MuzzleRotation.Vector();
-				Projectile->InitVelocity(LaunchDir);
+				//FVector const LaunchDir = MuzzleRotation.Vector();
+				//Projectile->InitVelocity(LaunchDir);
 			}
 		}
 	}
