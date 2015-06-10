@@ -10,11 +10,13 @@ class FPSTUTORIAL_API AFPSProjectile : public AActor
 {
 
 	GENERATED_BODY()
-	
-
-public:
 
 	AFPSProjectile(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION()
+	void OnHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+public:
 
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	USphereComponent* CollisionComp;

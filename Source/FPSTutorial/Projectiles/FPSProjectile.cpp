@@ -14,6 +14,7 @@ AFPSProjectile::AFPSProjectile(const FObjectInitializer& ObjectInitializer)
 	CollisionComp = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(15.0f);
 	CollisionComp->SetCollisionProfileName("FPSProjectile");
+	CollisionComp->OnComponentHit.AddDynamic(this, &AFPSProjectile::OnHit);
 	RootComponent = CollisionComp;
 
 	ProjectileMovement = ObjectInitializer.CreateDefaultSubobject<UProjectileMovementComponent>(this, TEXT("ProjectileComp"));
@@ -25,6 +26,15 @@ AFPSProjectile::AFPSProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovement->Bounciness = 0.3f;
 
 	InitialLifeSpan = 3.0f;
+
+}
+
+void AFPSProjectile::OnHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		OtherComp->AddImpulseAtLocation(ProjectileMovement->Velocity * 100.f, Hit.ImpactPoint);
+	}
 }
 
 void AFPSProjectile::InitVelocity(const FVector& ShootDirection)
