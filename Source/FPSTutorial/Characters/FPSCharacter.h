@@ -14,11 +14,17 @@ class FPSTUTORIAL_API AFPSCharacter : public ACharacter
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	UCameraComponent* FirstPersonCameraComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* FirstPersonMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
+	FVector MuzzleOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class AFPSProjectile> ProjectileClass;
 
 private:
 	UFUNCTION()
@@ -32,6 +38,9 @@ private:
 
 	UFUNCTION()
 	void OnStopJump();
+
+	UFUNCTION()
+	void OnFire();
 
 protected:
 

@@ -2,11 +2,12 @@
 
 #include "FPSTutorial.h"
 #include "FPSCharacter.h"
+#include "Projectiles/FPSProjectile.h"
 
 AFPSCharacter::AFPSCharacter(const FObjectInitializer& OBjectInitialzer)
 	: Super(OBjectInitialzer)
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 
 	FirstPersonCameraComponent = OBjectInitialzer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->AttachParent = CapsuleComponent;
@@ -19,8 +20,8 @@ AFPSCharacter::AFPSCharacter(const FObjectInitializer& OBjectInitialzer)
 	FirstPersonMesh->bCastDynamicShadow = false;
 	FirstPersonMesh->CastShadow = false;
 
-	Mesh->SetOwnerNoSee(false);
-}
+	Mesh->SetOwnerNoSee(true);
+} 
 
 void AFPSCharacter::BeginPlay()
 {
@@ -42,6 +43,7 @@ void AFPSCharacter::SetupPlayerInputComponent(class UInputComponent* InputCompon
 	InputComponent->BindAxis("LookHorizontal", this, &AFPSCharacter::AddControllerYawInput);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::OnStartJump);
 	InputComponent->BindAction("Jump", IE_Released, this, &AFPSCharacter::OnStopJump);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::OnFire);
 }
 
 void AFPSCharacter::MoveForward(float Value)
@@ -81,6 +83,37 @@ void AFPSCharacter::OnStartJump()
 void AFPSCharacter::OnStopJump()
 {
 	bPressedJump = false;
+}
+
+void AFPSCharacter::OnFire()
+{
+	if (ProjectileClass != NULL)
+	{
+		// Get the camera transform
+		FVector CameraLoc;
+		FRotator CameraRot;
+		GetActorEyesViewPoint(CameraLoc, CameraRot);
+		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the camera to find the final muzzle position
+		FVector const MuzzleLocation = CameraLoc + FTransform(CameraRot).TransformVector(MuzzleOffset);
+		//FVector const MuzzleLocation = CameraLoc + 
+		FRotator MuzzleRotation = CameraRot;
+		MuzzleRotation.Pitch += 10.0f;          // skew the aim upwards a bit
+		UWorld* const World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
+			// spawn the projectile at the muzzle
+			AFPSProjectile* const Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			if (Projectile)
+			{
+				// find launch direction
+				FVector const LaunchDir = MuzzleRotation.Vector();
+				Projectile->InitVelocity(LaunchDir);
+			}
+		}
+	}
 }
 
 // Called every frame
