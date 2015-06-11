@@ -37,12 +37,12 @@ void AFPSProjectile::OnHit(class AActor* OtherActor, class UPrimitiveComponent* 
 	}
 }
 
-void AFPSProjectile::InitVelocity(const FVector& ShootDirection)
+void AFPSProjectile::InitVelocity(const FVector& ShootDirection, const float ownerVelocity)
 {
 	if (ProjectileMovement)
 	{
 		// set the projectile's velocity to the desired direction
-		ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
+		ProjectileMovement->Velocity = ShootDirection * (ProjectileMovement->InitialSpeed + ownerVelocity);
 	}
 }
 

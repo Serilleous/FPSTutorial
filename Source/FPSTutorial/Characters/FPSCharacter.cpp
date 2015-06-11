@@ -10,7 +10,7 @@ AFPSCharacter::AFPSCharacter(const FObjectInitializer& OBjectInitialzer)
 	//PrimaryActorTick.bCanEverTick = true;
 
 	FirstPersonCameraComponent = OBjectInitialzer.CreateDefaultSubobject<UCameraComponent>(this, TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->AttachParent = CapsuleComponent;
+	FirstPersonCameraComponent->AttachParent = this->GetCapsuleComponent();
 	FirstPersonCameraComponent->RelativeLocation = FVector(0, 0, 50.0f + BaseEyeHeight);
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
@@ -20,7 +20,7 @@ AFPSCharacter::AFPSCharacter(const FObjectInitializer& OBjectInitialzer)
 	FirstPersonMesh->bCastDynamicShadow = false;
 	FirstPersonMesh->CastShadow = false;
 
-	Mesh->SetOwnerNoSee(true);
+	GetMesh()->SetOwnerNoSee(true);
 } 
 
 void AFPSCharacter::BeginPlay()
@@ -87,6 +87,7 @@ void AFPSCharacter::OnStopJump()
 
 void AFPSCharacter::OnFire()
 {
+
 	if (ProjectileClass != NULL)
 	{
 		// Get the camera transform
@@ -109,8 +110,8 @@ void AFPSCharacter::OnFire()
 			if (Projectile)
 			{
 				// find launch direction
-				//FVector const LaunchDir = MuzzleRotation.Vector();
-				//Projectile->InitVelocity(LaunchDir);
+				FVector const LaunchDir = MuzzleRotation.Vector();
+				Projectile->InitVelocity(LaunchDir, this->GetVelocity().Size());
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Movement)
 	UProjectileMovementComponent* ProjectileMovement;
 
-	void InitVelocity(const FVector& ShootDirection);
+	void InitVelocity(const FVector& ShootDirection, const float ownerVelocity);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
